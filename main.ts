@@ -67,12 +67,11 @@ const wait = (timeout: number) => {
 
   let count = 0, success = 0;
   for await (const line of rl) {
-    try {
-      count++;
+    count++;
       if (count < skipLines) {
         continue;
       }
-
+    try {
       let res = await client.invoke(new Api.contacts.ResolvePhone({ phone: line }));
       for (let x of res.users) {
         let user = x as any;
