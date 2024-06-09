@@ -3,6 +3,16 @@ import { StringSession } from "telegram/sessions";
 import * as input from 'input';
 import * as fs from 'fs';
 import * as readline from 'readline';
+import * as dotenv from 'dotenv';
+
+if (process.env.baseEnv && process.env.botEnv) {
+  dotenv.config({ path: process.env.baseEnv });
+  dotenv.config({ path: process.env.botEnv });
+} else {
+  console.log('no env found');
+}
+
+
 
 const wait = (timeout: number) => {
   return new Promise((res, rej) => {
@@ -13,13 +23,15 @@ const wait = (timeout: number) => {
 }
 
 (async () => {
-  const apiId = 20658026;
-  const apiHash = "2e2512e0537d012f50ae62c907ee084d";
-  let session = (await input.text("Inpu session(or skip): ")).replace('\n', '');
+  const apiId = (process.env.API_ID ? parseInt(process.env.API_ID) : null) || 20658026;
+  const apiHash = process.env.API_HASH || "2e2512e0537d012f50ae62c907ee084d";
+  let session = process.env.SESSION || (await input.text("Inpu session(or skip): ")).replace('\n', '');
   const stringSession = new StringSession(session); // fill this later with the value from session.save()
-  const timeoout = 45 * 1000;
-  let skipLines = 0;
-  const inputFile = 'tmp.csv';// await input.text("Enter csv file with numbers");
+  const timeout = (process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : null) || 45 * 1000;
+  let skipLines = (process.env.SKIP_LINES ? parseInt(process.env.SKIP_LINES) : null) || 0;
+  let checkLines = (process.env.CHECK_LINES ? parseInt(process.env.CHECK_LINES) : null) || 10000;
+  const inputFile = process.env.INPUT_FILE || 'tmp.csv';// await input.text("Enter csv file with numbers");
+  const resultFile = process.env.RES_FILE || 'out.csv';// await input.text("Enter csv file with numbers");
 
 
 
@@ -65,16 +77,21 @@ const wait = (timeout: number) => {
       for (let x of res.users) {
         let user = x as any;
         success++;
+
         console.log(`count:${count}, success:${success}`);
-        console.log(`out.txt`, `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}`);
-        fs.appendFile(`out.txt`, `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}\n`, function (err) {
+        fs.appendFile('log.txt', process.env.botEnv + '/4//' + `count:${count}, success:${success}`, function (err) { })
+        console.log(`${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}`);
+        fs.appendFile('log.txt', process.env.botEnv + '/3//' + `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}`, function (err) { })
+        fs.appendFile(resultFile, `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}\n`, function (err) {
           console.log(err);
+          fs.appendFile('log.txt', process.env.botEnv + '/2//' + err.message, function (err) { })
         });
       }
     } catch (ex) {
+      fs.appendFile('log.txt', process.env.botEnv + '/1//' + ex.message, function (err) { })
       console.log(ex);
     } finally {
-      await wait((Math.random() + 1) * timeoout);
+      await wait((Math.random() + 1) * timeout);
     }
   }
   //await client.sendMessage("me", { message: "Hello!" });
