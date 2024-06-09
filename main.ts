@@ -79,17 +79,26 @@ const wait = (timeout: number) => {
         success++;
 
         console.log(`count:${count}, success:${success}`);
-        fs.appendFile('log.txt', process.env.botEnv + '/4//' + `count:${count}, success:${success}`, function (err) { })
+        fs.appendFile('log.txt', process.env.botEnv + '/4//' + `count:${count}, success:${success}\n`, function (err) { })
         console.log(`${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}`);
-        fs.appendFile('log.txt', process.env.botEnv + '/3//' + `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}`, function (err) { })
+        fs.appendFile('log.txt', process.env.botEnv + '/3//' + `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}\n`, function (err) { })
         fs.appendFile(resultFile, `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}\n`, function (err) {
-          console.log(err);
-          fs.appendFile('log.txt', process.env.botEnv + '/2//' + err.message, function (err) { })
+          if (err) {
+            console.log(err);
+            fs.appendFile('log.txt', process.env.botEnv + '/2//' + err.message + '\n', function (err) { })
+          }
         });
       }
     } catch (ex) {
-      fs.appendFile('log.txt', process.env.botEnv + '/1//' + ex.message, function (err) { })
-      console.log(ex);
+      if (ex.errorMessage && ex.errorMessage == 'PHONE_NOT_OCCUPIED') {
+        fs.appendFile(resultFile, `${line}\tNO`, (err) => { });
+      } else if (ex.errorMessage && ex.errorMessage == 'PHONE_NUMBER_INVALID') {
+        fs.appendFile(resultFile, `${line}\tIN`, (err) => { });
+      } else {
+        fs.appendFile('log.txt', process.env.botEnv + '/1//' + ex.message + '\n', function (err) { })
+        console.log(ex);
+        await wait((Math.random() + 1) * timeout * 10);
+      }
     } finally {
       await wait((Math.random() + 1) * timeout);
     }

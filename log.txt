@@ -1,0 +1,5 @@
+undefined/4//count:1, success:1undefined/3//79175896458	552269492	User	null	Наида ГамзатовнаМокрышева./configs/bot0.env/4//count:1, success:1
+./configs/bot0.env/3//79175896458	552269492	User	null	Наида ГамзатовнаМокрышева
+./configs/bot0.env/1//400: PHONE_NOT_OCCUPIED (caused by contacts.ResolvePhone)
+./configs/bot0.env/4//count:3, success:2
+./configs/bot0.env/3//79818634846	883981903	User	anci_vl	Ancinull
