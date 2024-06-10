@@ -99,8 +99,10 @@ const wait = (timeout: number) => {
     } catch (ex) {
       if (ex.errorMessage && (ex.errorMessage == 'PHONE_NOT_OCCUPIED' || ex.errorMessage == 'PHONE_NOT_OCCUPIED')) {
         fs.appendFile(resultFile, `${line}\tNO`, (err) => { });
+        console.log(`${line}\tPHONE_NOT_OCCUPIED`);
       } else if (ex.errorMessage && (ex.errorMessage == 'PHONE_NUMBER_INVALID'||ex.errorMessage == 'PHONE NUMBER INVALID')) {
         fs.appendFile(resultFile, `${line}\tIN`, (err) => { });
+        console.log(`${line}\tPHONE_NUMBER_INVALID`);
       } else {
         fs.appendFile('log.txt', process.env.botEnv + '/1//' + ex.message + '\n', function (err) { })
         console.log(ex);
