@@ -68,9 +68,14 @@ const wait = (timeout: number) => {
   let count = 0, success = 0;
   for await (const line of rl) {
     count++;
-      if (count < skipLines) {
-        continue;
+    if (count < skipLines) {
+      if (count % 100 == 0) {
+        console.log('skiped', count);
       }
+      continue;
+    }
+
+    console.log('Ending skipig');
     try {
       let res = await client.invoke(new Api.contacts.ResolvePhone({ phone: line }));
       console.log(`count:${count}, success:${success}`);
@@ -88,13 +93,13 @@ const wait = (timeout: number) => {
         });
       }
 
-      if(res.users.length==0){
+      if (res.users.length == 0) {
         console.log(`${line}\t NU`)
       }
     } catch (ex) {
-      if (ex.errorMessage && ex.errorMessage == 'PHONE_NOT_OCCUPIED') {
+      if (ex.errorMessage && (ex.errorMessage == 'PHONE_NOT_OCCUPIED' || ex.errorMessage == 'PHONE_NOT_OCCUPIED')) {
         fs.appendFile(resultFile, `${line}\tNO`, (err) => { });
-      } else if (ex.errorMessage && ex.errorMessage == 'PHONE_NUMBER_INVALID') {
+      } else if (ex.errorMessage && (ex.errorMessage == 'PHONE_NUMBER_INVALID'||ex.errorMessage == 'PHONE NUMBER INVALID')) {
         fs.appendFile(resultFile, `${line}\tIN`, (err) => { });
       } else {
         fs.appendFile('log.txt', process.env.botEnv + '/1//' + ex.message + '\n', function (err) { })
