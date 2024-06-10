@@ -73,11 +73,10 @@ const wait = (timeout: number) => {
       }
     try {
       let res = await client.invoke(new Api.contacts.ResolvePhone({ phone: line }));
+      console.log(`count:${count}, success:${success}`);
       for (let x of res.users) {
         let user = x as any;
         success++;
-
-        console.log(`count:${count}, success:${success}`);
         fs.appendFile('log.txt', process.env.botEnv + '/4//' + `count:${count}, success:${success}\n`, function (err) { })
         console.log(`${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}`);
         fs.appendFile('log.txt', process.env.botEnv + '/3//' + `${line}\t${x.id}\t${x.className}\t${user.username}\t${user.firstName + user.lastName}\n`, function (err) { })
@@ -87,6 +86,10 @@ const wait = (timeout: number) => {
             fs.appendFile('log.txt', process.env.botEnv + '/2//' + err.message + '\n', function (err) { })
           }
         });
+      }
+
+      if(res.users.length==0){
+        console.log(`${line}\t NU`)
       }
     } catch (ex) {
       if (ex.errorMessage && ex.errorMessage == 'PHONE_NOT_OCCUPIED') {
